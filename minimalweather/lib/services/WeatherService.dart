@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:minimalweather/credentials.dart';
 import 'package:minimalweather/models/WeatherInfo.dart';
 
 class WeatherService {
@@ -12,7 +11,7 @@ class WeatherService {
     return http.get(
       _endPoint,
       headers: {
-        "accesskey": Credentials.rosemiteAccessKey,
+        // "accesskey": Credentials.rosemiteAccessKey,
         "city": city,
         "lat": lat == null ? "" : lat,
         "lon": lon == null ? "" : lon,
@@ -34,5 +33,21 @@ class WeatherService {
     } else {
       throw Exception('Failed to load weather');
     }
+  }
+
+  static Future<http.Response> _fetchSingleWeather(String city) {
+    return http.get(
+      _endPoint,
+      headers: {
+        "city": city,
+        "type": "single",
+      },
+    );
+  }
+
+  static Future<bool> isValidCity(String city) async {
+    final response = await _fetchSingleWeather(city);
+
+    return response.statusCode == 200;
   }
 }

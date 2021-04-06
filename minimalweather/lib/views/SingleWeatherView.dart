@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:minimalweather/models/WeatherInfo.dart';
 import 'package:minimalweather/services/Herlpers.dart';

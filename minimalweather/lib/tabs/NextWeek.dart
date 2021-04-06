@@ -3,8 +3,8 @@ import 'package:minimalweather/models/WeatherInfo.dart';
 import 'package:minimalweather/services/Herlpers.dart';
 import 'package:minimalweather/views/SingleWeatherView.dart';
 
-class NextTenDaysTab extends StatelessWidget {
-  NextTenDaysTab(this.weatherInfos, this.backgroundColor, this.navBarColor);
+class NextWeek extends StatelessWidget {
+  NextWeek(this.weatherInfos, this.backgroundColor, this.navBarColor);
   final Color navBarColor;
   static const String path = "assets/images/";
   final List<WeatherInfo> weatherInfos;

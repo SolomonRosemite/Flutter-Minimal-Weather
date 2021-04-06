@@ -20,15 +20,15 @@ class WeatherInfo {
       city: city,
       date: DateTime.fromMillisecondsSinceEpoch(json["dt"] * 1000),
       description: json["weather"][0]["description"],
-      feelsLike: json["feels_like"]["day"],
+      feelsLike: json["feels_like"]["day"].toDouble(),
       icon: json["weather"][0]["icon"],
       status: json["weather"][0]["main"],
       sunrise: json["sunrise"],
       sunset: json["sunset"],
-      temp: json["temp"]["day"],
-      tempMax: json["temp"]["max"],
-      tempMin: json["temp"]["min"],
-      windSpeed: json["wind_speed"],
+      temp: json["temp"]["day"].toDouble(),
+      tempMax: json["temp"]["max"].toDouble(),
+      tempMin: json["temp"]["min"].toDouble(),
+      windSpeed: json["wind_speed"].toDouble(),
     );
   }
 
