@@ -54,7 +54,7 @@ class _HomeViewState extends State<HomeView> {
           sunrise: 1617684053,
           sunset: 1617732210,
           windSpeed: 3.09,
-          date: i % 2 == 0 ? DateTime.now() : DateTime.now().add(Duration(days: 1)),
+          date: DateTime.now().add(Duration(days: i)),
         ),
       );
     }
@@ -107,7 +107,15 @@ class _HomeViewState extends State<HomeView> {
           title: Row(
             children: [
               Expanded(
-                child: Text('Mi. Weather', style: TextStyle(fontSize: 14)),
+                child: GestureDetector(
+                  // onTap: () => ,
+                  child: Container(
+                    child: Text(
+                      'Mi. Weather',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ),
               ),
               Center(
                 child: Text(time, style: TextStyle(fontSize: 14)),
@@ -142,7 +150,7 @@ class _HomeViewState extends State<HomeView> {
           children: [
             SingleDayTab(weatherInfos.first, backgroundColor),
             SingleDayTab(weatherInfos[1], backgroundColor),
-            NextTenDaysTab(weatherInfos, backgroundColor),
+            NextTenDaysTab(weatherInfos, backgroundColor, navBarColor),
           ],
         ),
       ),
