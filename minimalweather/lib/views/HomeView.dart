@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:minimalweather/models/WeatherInfo.dart';
+import 'package:minimalweather/services/herlpers.dart';
 import 'package:minimalweather/tabs/NextTenDaysTab.dart';
-import 'package:minimalweather/tabs/TodayTab.dart';
+import 'package:minimalweather/tabs/SingleDayTab.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -13,16 +13,13 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   static const duration = const Duration(seconds: 1);
-  // final Color backgroundColor = Colors.blue[400];
-  final Color backgroundColor = Color.fromARGB(255, 8, 90, 198);
+  final Color backgroundColor = Helpers.getColorFromDate(DateTime.now());
   Color indicatorColor;
   Color navBarColor;
   Timer timer;
 
-  final timeFormat = new DateFormat('HH:mm');
-  String time = "";
-
   List<WeatherInfo> weatherInfos;
+  String time = "";
 
   @override
   void initState() {
@@ -32,7 +29,7 @@ class _HomeViewState extends State<HomeView> {
     setNavBarColor(75);
     setIndicatorColor(125);
 
-    time = timeFormat.format(new DateTime.now());
+    time = Helpers.format(DateTime.now());
     if (timer == null)
       timer = Timer.periodic(duration, (Timer t) {
         handleTick();
@@ -49,14 +46,15 @@ class _HomeViewState extends State<HomeView> {
           city: "Seattle",
           status: "Clouds",
           description: "Few Clouds",
-          icon: "03n",
+          icon: i % 2 == 0 ? "01d" : "01n",
           temp: 1,
           feelsLike: -1,
           tempMax: 5,
           tempMin: -2,
-          sunrise: 1617597836,
-          sunset: 1617645757,
+          sunrise: 1617684053,
+          sunset: 1617732210,
           windSpeed: 3.09,
+          date: i % 2 == 0 ? DateTime.now() : DateTime.now().add(Duration(days: 1)),
         ),
       );
     }
@@ -95,7 +93,7 @@ class _HomeViewState extends State<HomeView> {
 
   void handleTick() {
     setState(() {
-      time = timeFormat.format(new DateTime.now());
+      time = Helpers.format(DateTime.now());
     });
   }
 
@@ -121,7 +119,7 @@ class _HomeViewState extends State<HomeView> {
                     child: TextButton(
                       onPressed: () {},
                       child: Icon(
-                        Icons.settings,
+                        Icons.search,
                         color: Colors.white,
                         size: 20,
                       ),
@@ -147,15 +145,6 @@ class _HomeViewState extends State<HomeView> {
             NextTenDaysTab(weatherInfos, backgroundColor),
           ],
         ),
-        // bottomNavigationBar: TabBar(
-        //   labelColor: Colors.red,
-        //   overlayColor: MaterialStateProperty.all(Colors.blue),
-        //   tabs: [
-        //     Tab(child: Text("Today")),
-        //     Tab(child: Text("Tomorrow")),
-        //     Tab(child: Text("Next 10 Days")),
-        //   ],
-        // ),
       ),
     );
   }

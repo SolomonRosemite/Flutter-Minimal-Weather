@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
       title: 'Minimal Weather',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: "ZURCHN",
       ),
       home: HomeView(),
     );
