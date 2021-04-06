@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:minimalweather/models/WeatherInfo.dart';
+import 'package:minimalweather/services/WeatherService.dart';
 import 'package:minimalweather/services/herlpers.dart';
 import 'package:minimalweather/tabs/NextTenDaysTab.dart';
 import 'package:minimalweather/tabs/SingleDayTab.dart';
@@ -18,12 +19,14 @@ class _HomeViewState extends State<HomeView> {
   Color navBarColor;
   Timer timer;
 
-  List<WeatherInfo> weatherInfos;
+  Future<List<WeatherInfo>> futureweatherInfos;
+  // List<WeatherInfo> weatherInfos;
   String time = "";
 
   @override
   void initState() {
     super.initState();
+    futureweatherInfos = WeatherService.fetchWeather(city: "London");
 
     prepareData();
     setNavBarColor(75);
@@ -38,26 +41,26 @@ class _HomeViewState extends State<HomeView> {
 
   void prepareData() {
     // TODO: Fetch data here.
-    weatherInfos = [];
+    // weatherInfos = WeatherService.fetchWeather(city: "London");
 
-    for (var i = 0; i < 10; i++) {
-      weatherInfos.add(
-        WeatherInfo(
-          city: "Seattle",
-          status: "Clouds",
-          description: "Few Clouds",
-          icon: i % 2 == 0 ? "01d" : "01n",
-          temp: 1,
-          feelsLike: -1,
-          tempMax: 5,
-          tempMin: -2,
-          sunrise: 1617684053,
-          sunset: 1617732210,
-          windSpeed: 3.09,
-          date: DateTime.now().add(Duration(days: i)),
-        ),
-      );
-    }
+    // for (var i = 0; i < 10; i++) {
+    //   weatherInfos.add(
+    //     WeatherInfo(
+    //       city: "Seattle",
+    //       status: "Clouds",
+    //       description: "Few Clouds",
+    //       icon: i % 2 == 0 ? "01d" : "01n",
+    //       temp: 1,
+    //       feelsLike: -1,
+    //       tempMax: 5,
+    //       tempMin: -2,
+    //       sunrise: 1617684053,
+    //       sunset: 1617732210,
+    //       windSpeed: 3.09,
+    //       date: DateTime.now().add(Duration(days: i)),
+    //     ),
+    //   );
+    // }
   }
 
   void setNavBarColor(final int p) {
@@ -142,16 +145,28 @@ class _HomeViewState extends State<HomeView> {
             tabs: [
               Tab(child: Text("Today")),
               Tab(child: Text("Tomorrow")),
-              Tab(child: Text("10 Days")),
+              Tab(child: Text("Next Week")),
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            SingleDayTab(weatherInfos.first, backgroundColor),
-            SingleDayTab(weatherInfos[1], backgroundColor),
-            NextTenDaysTab(weatherInfos, backgroundColor, navBarColor),
-          ],
+        body: FutureBuilder<List<WeatherInfo>>(
+          future: futureweatherInfos,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return TabBarView(
+                children: [
+                  SingleDayTab(snapshot.data.first, backgroundColor),
+                  SingleDayTab(snapshot.data[1], backgroundColor),
+                  NextTenDaysTab(snapshot.data, backgroundColor, navBarColor),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+
+            // By default, show a loading spinner.
+            return CircularProgressIndicator();
+          },
         ),
       ),
     );

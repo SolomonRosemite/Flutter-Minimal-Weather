@@ -15,21 +15,20 @@ class WeatherInfo {
   final double windSpeed; // 3.09 m/s
   final DateTime date; // Date
 
-  factory WeatherInfo.fromJson(Map<String, dynamic> j, String city) {
-    Map<String, dynamic> data = j["daily"];
+  factory WeatherInfo.fromJson(Map<String, dynamic> json, String city) {
     return WeatherInfo(
       city: city,
-      date: DateTime.fromMillisecondsSinceEpoch(data["dt"] * 1000),
-      description: data["weather"][0]["description"],
-      feelsLike: data["feels_like"]["day"],
-      icon: data["weather"][0]["icon"],
-      status: data["weather"][0]["main"],
-      sunrise: data["sunrise"],
-      sunset: data["sunset"],
-      temp: data["temp"]["day"],
-      tempMax: data["temp"]["max"],
-      tempMin: data["temp"]["min"],
-      windSpeed: data["wind_speed"],
+      date: DateTime.fromMillisecondsSinceEpoch(json["dt"] * 1000),
+      description: json["weather"][0]["description"],
+      feelsLike: json["feels_like"]["day"],
+      icon: json["weather"][0]["icon"],
+      status: json["weather"][0]["main"],
+      sunrise: json["sunrise"],
+      sunset: json["sunset"],
+      temp: json["temp"]["day"],
+      tempMax: json["temp"]["max"],
+      tempMin: json["temp"]["min"],
+      windSpeed: json["wind_speed"],
     );
   }
 
