@@ -1,6 +1,8 @@
+import 'dart:developer';
+
+import 'package:minimalweather/services/Herlpers.dart';
 import 'package:minimalweather/widgets/WeatherStatusItem.dart';
 import 'package:minimalweather/models/WeatherInfo.dart';
-import 'package:minimalweather/services/herlpers.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -16,6 +18,13 @@ class SingleDayTab extends StatelessWidget {
     return Helpers.format(value);
   }
 
+  String getDescriptionDate(DateTime date) {
+    if (date.isSameDate(DateTime.now())) {
+      return "Today's";
+    }
+    return Helpers.format(date, formatStr: "d EEEE");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,6 +32,9 @@ class SingleDayTab extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Spacer(
+            flex: 1,
+          ),
           Expanded(
             child: Align(
               alignment: Alignment.bottomCenter,
@@ -49,17 +61,27 @@ class SingleDayTab extends StatelessWidget {
             weatherInfo.temp.round().toString() + "°",
             style: TextStyle(color: Colors.white, fontSize: 45, fontFamily: "Roboto"),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 30),
           Text(
-            // "Good night".toUpperCase(),
-            // "Beautiful Evening".toUpperCase(),
-            "Beautiful Evening",
+            weatherInfo.description.capitalizeFirstofEach,
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w300,
               fontSize: 15,
             ),
           ),
+          Spacer(
+            flex: 1,
+          ),
+          Text(
+            Helpers.getUsergreeting(),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w300,
+              fontSize: 15,
+            ),
+          ),
+          SizedBox(height: 20),
           Expanded(
             child: Align(
               alignment: Alignment.bottomCenter,
@@ -70,9 +92,9 @@ class SingleDayTab extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        WeatherStatusItem("Sunrise", fromTimestampToTime(weatherInfo.sunrise)),
+                        WeatherStatusItem(getDescriptionDate(weatherInfo.date) + " Min.", weatherInfo.tempMin.toString() + "°C"),
                         WeatherStatusItem("Wind Speed", weatherInfo.windSpeed.toString() + "m/s"),
-                        WeatherStatusItem("Sunset", fromTimestampToTime(weatherInfo.sunset)),
+                        WeatherStatusItem(getDescriptionDate(weatherInfo.date) + " Max.", weatherInfo.tempMax.toString() + "°C"),
                       ],
                     ),
                   ],

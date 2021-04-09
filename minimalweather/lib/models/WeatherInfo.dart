@@ -32,6 +32,23 @@ class WeatherInfo {
     );
   }
 
+  factory WeatherInfo.fromJsonCurrent(Map<String, dynamic> json, Map<String, dynamic> todaysFullWeatherReportJson, String city) {
+    return WeatherInfo(
+      city: city,
+      date: DateTime.fromMillisecondsSinceEpoch(json["dt"] * 1000),
+      description: json["weather"][0]["description"],
+      feelsLike: json["feels_like"].toDouble(),
+      icon: json["weather"][0]["icon"],
+      status: json["weather"][0]["main"],
+      sunrise: json["sunrise"],
+      sunset: json["sunset"],
+      temp: json["temp"].toDouble(),
+      tempMax: todaysFullWeatherReportJson["temp"]["max"].toDouble(),
+      tempMin: todaysFullWeatherReportJson["temp"]["min"].toDouble(),
+      windSpeed: json["wind_speed"].toDouble(),
+    );
+  }
+
   WeatherInfo({
     @required this.city,
     @required this.status,

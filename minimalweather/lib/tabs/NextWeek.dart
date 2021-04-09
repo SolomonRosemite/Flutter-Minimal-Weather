@@ -42,7 +42,7 @@ class NextWeek extends StatelessWidget {
                           Text(
                             weatherInfos[index].date.isSameDate(DateTime.now()) ? "Today" : Helpers.format(weatherInfos[index].date, formatStr: "EEEE, d. MMM."),
                           ),
-                          Text(weatherInfos[index].description),
+                          Text(weatherInfos[index].description.capitalizeFirstofEach),
                         ],
                       ),
                       Spacer(),

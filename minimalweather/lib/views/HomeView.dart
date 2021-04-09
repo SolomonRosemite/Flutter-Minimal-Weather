@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:minimalweather/models/WeatherInfo.dart';
 import 'package:minimalweather/models/ChangeLocationResult.dart';
+import 'package:minimalweather/services/SharedPreferencesService.dart';
 import 'package:minimalweather/services/WeatherService.dart';
 import 'package:minimalweather/services/herlpers.dart';
 import 'package:minimalweather/tabs/NextWeek.dart';
@@ -20,7 +21,6 @@ class _HomeViewState extends State<HomeView> {
 
   Future<List<WeatherInfo>> futureweatherInfos;
 
-  String city = "Berlin";
   Color indicatorColor;
   Color navBarColor;
   String time = "";
@@ -29,7 +29,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    futureweatherInfos = WeatherService.fetchWeather(city: "London");
+    futureweatherInfos = fetchWeather();
 
     setNavBarColor(75);
     setIndicatorColor(125);
@@ -41,6 +41,30 @@ class _HomeViewState extends State<HomeView> {
       });
     }
   }
+
+  Future<List<WeatherInfo>> fetchWeather() async {
+    await SharedPreferencesService.initialize();
+
+    final city = SharedPreferencesService.getCity();
+    final lat = SharedPreferencesService.getLatitude() ?? -1;
+    final lon = SharedPreferencesService.getLongitude() ?? -1;
+
+    return WeatherService.fetchWeather(city: city, lat: lat, lon: lon);
+  }
+
+  final snackBarFetchingMessage = SnackBar(
+    // duration: const Duration(seconds: 1),
+    content: Text('Fetching new data'),
+    action: SnackBarAction(label: 'Ok!', onPressed: () {}),
+  );
+
+  final snackBarFetchCompleteMessage = SnackBar(
+    content: Text(
+      'Updated!',
+      style: TextStyle(color: Colors.green),
+    ),
+    backgroundColor: Colors.white,
+  );
 
   void setNavBarColor(final int p) {
     final red = ((backgroundColor.red * p) / 100);
@@ -81,9 +105,7 @@ class _HomeViewState extends State<HomeView> {
 
   Future<ChangeLocationResult> handleChangeLocationClick() async {
     bool didApply = false;
-    double opacity = 0;
     String city = "";
-    String text = "";
     bool progressIndicatorActive = false;
 
     await showDialog<bool>(
@@ -95,32 +117,13 @@ class _HomeViewState extends State<HomeView> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                // Opacity(
-                //   opacity: opacity,
-                //   child: Text(
-                //     'Sorry... the city ' + city + " could not be found.",
-                //     style: TextStyle(
-                //       color: Colors.red[400],
-                //     ),
-                //   ),
-                // ),
-                Text(
-                  text,
-                  style: TextStyle(
-                    color: Colors.red[400],
-                  ),
-                ),
                 TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: 'London',
+                    hintText: 'Example: London',
                   ),
                   onChanged: (value) {
                     city = value;
-                    setState(() {
-                      text = "";
-                      opacity = 0;
-                    });
                   },
                 ),
               ],
@@ -147,19 +150,21 @@ class _HomeViewState extends State<HomeView> {
                 GlobalKey _dialogKey = GlobalKey();
                 showLoadingDialog(context, _dialogKey);
 
-                if (!await WeatherService.isValidCity(city)) {
+                final result = await WeatherService.isValidCity(city);
+
+                if (!result.isvalid) {
                   if (progressIndicatorActive) {
                     Navigator.of(_dialogKey.currentContext, rootNavigator: true).pop();
                     progressIndicatorActive = false;
                   }
 
-                  log("message");
-                  setState(() {
-                    text = "Sorry... the city " + city + " could not be found.";
-                    opacity = 1;
-                  });
+                  showErrorDialog(city);
                   return;
                 }
+
+                SharedPreferencesService.setCity(city);
+                SharedPreferencesService.setLatitude(result.lat);
+                SharedPreferencesService.setLongitude(result.lon);
 
                 if (progressIndicatorActive) {
                   Navigator.of(_dialogKey.currentContext, rootNavigator: true).pop();
@@ -177,6 +182,31 @@ class _HomeViewState extends State<HomeView> {
     );
 
     return ChangeLocationResult(city: city, didApply: didApply);
+  }
+
+  void showErrorDialog(String cityname) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // title: Text('Sorry the city $cityname could not be found.'),
+          title: Text('Could not find city'),
+          content: Text('The City "$cityname" could not be found.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Close',
+                style: TextStyle(color: Colors.red[400]),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   showLoadingDialog(BuildContext context, GlobalKey _key) {
@@ -213,10 +243,15 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> handleRefresh({String newCity}) async {
-    log(newCity);
-    city = newCity != null ? newCity : city;
+    final city = newCity != null ? newCity : SharedPreferencesService.getCity();
+    log(city);
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBarFetchingMessage);
+
     futureweatherInfos = WeatherService.fetchWeather(city: city);
     await futureweatherInfos;
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBarFetchCompleteMessage);
   }
 
   Widget build(BuildContext context) {
@@ -292,15 +327,12 @@ class _HomeViewState extends State<HomeView> {
           future: futureweatherInfos,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return RefreshIndicator(
-                onRefresh: () async => await handleRefresh(),
-                child: TabBarView(
-                  children: [
-                    SingleDayTab(snapshot.data.first, backgroundColor),
-                    SingleDayTab(snapshot.data[1], backgroundColor),
-                    NextWeek(snapshot.data, backgroundColor, navBarColor),
-                  ],
-                ),
+              return TabBarView(
+                children: [
+                  SingleDayTab(snapshot.data.first, backgroundColor),
+                  SingleDayTab(snapshot.data[1], backgroundColor),
+                  NextWeek(snapshot.data, backgroundColor, navBarColor),
+                ],
               );
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
