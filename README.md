@@ -67,7 +67,7 @@ flutter pub get
   <p align="center">
     <sub>Copyright © 2021-present, Solomon Rosemite</sub>
   </p>
-  <p align="center">Flutter-Minimal-Weather-Todo <a href="https://github.com/SolomonRosemite/Flutter-Minimal-Weather/blob/master/LICENSE">is MIT licensed 💖</a>
+  <p align="center">Flutter-Minimal-Weather <a href="https://github.com/SolomonRosemite/Flutter-Minimal-Weather/blob/master/LICENSE">is MIT licensed 💖</a>
   </p>
   <p align="center">
     <img src="https://raw.githubusercontent.com/SolomonRosemite/Flutter-Minimal-Weather/master/minimalweather/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="65">
