@@ -25,6 +25,7 @@ class _HomeViewState extends State<HomeView> {
   Color navBarColor;
   String time = "";
   Timer timer;
+  bool visable = false;
 
   @override
   void initState() {
@@ -58,13 +59,13 @@ class _HomeViewState extends State<HomeView> {
     action: SnackBarAction(label: 'Ok!', onPressed: () {}),
   );
 
-  final snackBarFetchCompleteMessage = SnackBar(
-    content: Text(
-      'Updated!',
-      style: TextStyle(color: Colors.green),
-    ),
-    backgroundColor: Colors.white,
-  );
+  SnackBar get snackBarFetchCompleteMessage => SnackBar(
+        content: Text(
+          'Updated!',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: navBarColor,
+      );
 
   void setNavBarColor(final int p) {
     final red = ((backgroundColor.red * p) / 100);
@@ -327,12 +328,22 @@ class _HomeViewState extends State<HomeView> {
           future: futureweatherInfos,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return TabBarView(
-                children: [
-                  SingleDayTab(snapshot.data.first, backgroundColor),
-                  SingleDayTab(snapshot.data[1], backgroundColor),
-                  NextWeek(snapshot.data, backgroundColor, navBarColor),
-                ],
+              // log("here");
+              new Future.delayed(const Duration(milliseconds: 500), () {
+                setState(() {
+                  visable = true;
+                });
+              });
+              return AnimatedOpacity(
+                opacity: visable ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 600),
+                child: TabBarView(
+                  children: [
+                    SingleDayTab(snapshot.data.first, backgroundColor),
+                    SingleDayTab(snapshot.data[1], backgroundColor),
+                    NextWeek(snapshot.data, backgroundColor, navBarColor),
+                  ],
+                ),
               );
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
