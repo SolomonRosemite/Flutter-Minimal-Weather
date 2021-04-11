@@ -24,8 +24,6 @@
 4. Change City: You may change your city by selecting the search button at the top left.
 5. Refresh: Lastly if you wish to see if the weather changed, you can update the weather by selecting the reload button at the top left.
 
-# Installation⚙️
-
 ## Mobile Installation📱
 
 1. Download the .apk file for Android.
