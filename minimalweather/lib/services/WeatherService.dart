@@ -7,7 +7,7 @@ import 'package:minimalweather/models/IsValidCityResponse.dart';
 import 'package:minimalweather/models/WeatherInfo.dart';
 
 class WeatherService {
-  static const String _endPoint = 'https://api.rosemite.cf/weather';
+  static const String _endPoint = 'https://api.rosemite.dev/weather';
 
   static Future<http.Response> _fetchWeather({String city, double lat, double lon}) {
     log("Lat: " + lat.toString());
